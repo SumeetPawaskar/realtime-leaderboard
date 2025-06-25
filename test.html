@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Real-Time Leaderboard Test</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <h2>Leaderboard Test Client</h2>
+
+  <button onclick="sendScore()">Update Score</button>
+  <button onclick="getTop()">Get Top Players</button>
+
+  <script>
+    const socket = io("http://localhost:3000");
+
+    function sendScore() {
+      const payload = {
+        playerId: "player123",
+        region: "asia",
+        mode: "solo",
+        score: 50
+      };
+      socket.emit("playerScoreUpdate", payload);
+      console.log("Score update sent", payload);
+    }
+
+    function getTop() {
+      socket.emit("getTopPlayers", { region: "asia", mode: "solo", limit: 5 }, (data) => {
+        console.log("Top players:", data);
+        alert(JSON.stringify(data, null, 2));
+      });
+    }
+
+    socket.on("leaderboardUpdate", (data) => {
+      console.log("Real-time leaderboard update:", data);
+    });
+  </script>
+</body>
+</html>
